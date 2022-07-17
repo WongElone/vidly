@@ -1,5 +1,6 @@
 const genres = require('./genres');
 const customers = require('./customers');
+const movies = require('./movies');
 const express = require('express');
 const app = express();
 
@@ -11,6 +12,7 @@ mongoose.connect('mongodb://localhost/vidly')
 app.use(express.json());
 app.use('/api/genres', genres);
 app.use('/api/customers', customers);
+app.use('/api/movies', movies);
 
 app.get('/', (req, res) => res.send('Hello World!'));
 
