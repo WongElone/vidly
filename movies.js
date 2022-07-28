@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Movie, validateMovie, validateMoviePut } = require('./models/movie');
+const { Genre } = require('./models/genre');
 
 router.get('/', async (req, res) => {
     const movies = await Movie.find().sort('title');
@@ -20,14 +21,20 @@ router.post('/', async (req, res) => {
     const { error } = validateMovie(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
+    const genre = await Genre.findById(req.body.genreId);
+    if (!genre) return res.status(400).send('The genre with the given genre ID was not found.');
+
     let movie = new Movie({
         title: req.body.title,
         numberInStock: req.body.numberInStock,
         dailyRentalRate: req.body.dailyRentalRate,
-        genre: req.body.genre        
+        genre: {
+            _id: genre._id,
+            name: genre.name
+        }
     });
 
-    movie = await movie.save();
+    await movie.save();
 
     res.send(movie);
 });
@@ -47,10 +54,20 @@ router.put('/:id', async (req, res) => {
     let movie = await Movie.findById(req.params.id);
     if (!movie) return res.status(404).send('The movie with the given ID was not found.');
 
-    for (let key in req.body)
-        movie[key] = req.body[key];
+    for (let key in req.body) {
+        if (key === 'genreId') {
+            const genre = Genre.findById(req.body.genreId);
+            if (error) return res.status(400).send('Invalid genre.');
+
+            movie.genre = {
+                _id: genre._id,
+                name: genre.name
+            }
+        }
+        else movie[key] = req.body[key];
+    }
     
-    movie = await movie.save();
+    await movie.save();
 
     res.send(movie);
 });
