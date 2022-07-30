@@ -1,4 +1,5 @@
 const autho = require('../middleware/autho');
+const admin = require('../middleware/admin');
 const express = require('express');
 const router = express.Router();
 const { Rental, validateRentalPost, validateRentalPut } = require('../models/rental');
@@ -93,7 +94,7 @@ router.put('/:id', autho, async (req, res) => {
     res.send(rental);
 });
 
-router.delete('/:id', autho, async (req, res) => {    
+router.delete('/:id', [autho, admin], async (req, res) => {    
     const rental = await Rental.findByIdAndRemove(req.params.id);
 
     if (!rental) return res.status(404).send('Rental with the given ID was not found.');

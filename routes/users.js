@@ -1,4 +1,5 @@
 const autho = require('../middleware/autho');
+const admin = require('../middleware/admin');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const express = require('express');
@@ -10,13 +11,20 @@ router.get('/me', autho, async (req, res) => {
     res.send(user);
 });
 
-router.get('/', async (req, res) => {
+router.put('/me', autho, async (req, res) => {
+    const user = await User.findById(req.user._id).select('-password');
+    // later add code
+    // request password for changes
+    res.send('user info changed');
+});
+
+router.get('/', [autho, admin], async (req, res) => {
     const users = await User.find().sort('name');
 
     res.send(_.pick(users, ['_id', 'name', 'email']));
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', [autho, admin], async (req, res) => {
     const user = await User.findById(req.params.id);
     
     if (!user) return res.status(404).send('User with the given ID was not found.');
@@ -42,7 +50,7 @@ router.post('/', async (req, res) => {
     res.header('x-authen-token', token).send(_.pick(user, ['_id', 'name', 'email']));
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', [autho, admin], async (req, res) => {
     const { error } = validateUserPut(req.body);
     
     if (error) return res.status(400).send(error.details[0].message);
@@ -63,7 +71,7 @@ router.put('/:id', async (req, res) => {
     res.send(_.pick(user, ['_id', 'name', 'email']));
 });
 
-router.delete('/:id', async (req, res) => {    
+router.delete('/:id', [autho, admin], async (req, res) => {    
     const user = await User.findByIdAndRemove(req.params.id);
 
     if (!user) return res.status(404).send('User with the given ID was not found.');
