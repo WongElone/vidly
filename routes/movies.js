@@ -1,3 +1,4 @@
+const autho = require('../middleware/autho');
 const express = require('express');
 const router = express.Router();
 const { Movie, validateMovie, validateMoviePut } = require('../models/movie');
@@ -17,7 +18,7 @@ router.get('/:id', async (req, res) => {
     res.send(movie);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', autho, async (req, res) => {
     const { error } = validateMovie(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -39,7 +40,7 @@ router.post('/', async (req, res) => {
     res.send(movie);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', autho, async (req, res) => {
     const movie = await Movie.findByIdAndRemove(req.params.id);
 
     if (!movie) return res.status(404).send('The movie with the given ID was not found.');
@@ -47,7 +48,7 @@ router.delete('/:id', async (req, res) => {
     res.send(movie);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', autho, async (req, res) => {
     const { error } = validateMoviePut(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 

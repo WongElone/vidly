@@ -1,14 +1,15 @@
+const autho = require('../middleware/autho');
 const express = require('express');
 const router = express.Router();
 const { Customer, validateCustomerPost, validateCustomerPut } = require('../models/customer');
 
-router.get('/', async (req, res) => {
+router.get('/', autho, async (req, res) => {
     const customer = await Customer.find().sort({ name: 1 });
     
     res.send(customer);
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', autho, async (req, res) => {
     const customer = await Customer.findById(req.params.id);
 
     if (!customer) return res.status(404).send('The customer with the given ID was not found.');
@@ -16,7 +17,7 @@ router.get('/:id', async (req, res) => {
     res.send(customer);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', autho, async (req, res) => {
     const { error } = validateCustomerPost(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -31,7 +32,7 @@ router.post('/', async (req, res) => {
     res.send(customer);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', autho, async (req, res) => {
     const { error } = validateCustomerPut(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -46,7 +47,7 @@ router.put('/:id', async (req, res) => {
     res.send(customer);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', autho, async (req, res) => {
    const customer = await Customer.findByIdAndRemove(req.params.id);
    
    if (!customer) return res.status(404).send('The customer with the given ID was not found.');

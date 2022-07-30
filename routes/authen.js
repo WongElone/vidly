@@ -1,3 +1,4 @@
+// user authentication API
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const express = require('express');
@@ -30,8 +31,8 @@ router.post('/', async (req, res) => {
     const validPassword = await bcrypt.compare(req.body.password, user.password);
     if (!validPassword) return res.status(400).send('Invalid email or password.');
     
-    const token = user.generateAuthToken();
-    res.header('x-auth-token', token).send(token);
+    const token = user.generateAuthenToken();
+    res.header('x-authen-token', token).send(token);
 });
 
 router.put('/:id', async (req, res) => {

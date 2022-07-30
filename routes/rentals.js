@@ -1,3 +1,4 @@
+const autho = require('../middleware/autho');
 const express = require('express');
 const router = express.Router();
 const { Rental, validateRentalPost, validateRentalPut } = require('../models/rental');
@@ -5,13 +6,13 @@ const { Customer } = require('../models/customer');
 const { Movie } = require('../models/movie');
 
 
-router.get('/', async (req, res) => {
+router.get('/', autho, async (req, res) => {
     const rentals = await Rental.find().sort('movie.title'); //maybe wrong
     
     res.send(rentals);
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', autho, async (req, res) => {
     const rental = await Rental.findById(req.params.id);
     
     if (!rental) return res.status(404).send('Rental with thegiven ID was not found.');
@@ -19,7 +20,7 @@ router.get('/:id', async (req, res) => {
     res.send(rental);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', autho, async (req, res) => {
     const { error } = validateRentalPost(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     
@@ -54,7 +55,7 @@ router.post('/', async (req, res) => {
     res.send(rental);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', autho, async (req, res) => {
     const { error } = validateRentalPut(req.body);
     
     if (error) return res.status(400).send(error.details[0].message);
@@ -92,7 +93,7 @@ router.put('/:id', async (req, res) => {
     res.send(rental);
 });
 
-router.delete('/:id', async (req, res) => {    
+router.delete('/:id', autho, async (req, res) => {    
     const rental = await Rental.findByIdAndRemove(req.params.id);
 
     if (!rental) return res.status(404).send('Rental with the given ID was not found.');

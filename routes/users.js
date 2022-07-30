@@ -1,14 +1,19 @@
+const autho = require('../middleware/autho');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const express = require('express');
 const router = express.Router();
 const { User, validateUserPost, validateUserPut } = require('../models/user');
 
+router.get('/me', autho, async (req, res) => {
+    const user = await User.findById(req.user._id).select('-password');
+    res.send(user);
+});
 
 router.get('/', async (req, res) => {
     const users = await User.find().sort('name');
 
-    res.send(_.pick(user, ['_id', 'name', 'email']));
+    res.send(_.pick(users, ['_id', 'name', 'email']));
 });
 
 router.get('/:id', async (req, res) => {
@@ -33,8 +38,8 @@ router.post('/', async (req, res) => {
 
     await user.save();
     
-    const token = user.generateAuthToken();
-    res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'email']));
+    const token = user.generateAuthenToken();
+    res.header('x-authen-token', token).send(_.pick(user, ['_id', 'name', 'email']));
 });
 
 router.put('/:id', async (req, res) => {
