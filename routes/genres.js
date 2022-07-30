@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Genre, validateGenre } = require('./models/genre');
+const { Genre, validateGenre } = require('../models/genre');
 
 router.get('/', async (req, res) => {
     const genres = await Genre

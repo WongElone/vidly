@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { Rental, validateRentalPost, validateRentalPut } = require('./models/rental');
-const { Customer } = require('./models/customer');
-const { Movie } = require('./models/movie');
+const { Rental, validateRentalPost, validateRentalPut } = require('../models/rental');
+const { Customer } = require('../models/customer');
+const { Movie } = require('../models/movie');
 
 
 router.get('/', async (req, res) => {
