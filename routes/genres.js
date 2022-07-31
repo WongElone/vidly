@@ -3,21 +3,21 @@ const admin = require('../middleware/admin');
 const express = require('express');
 const router = express.Router();
 const { Genre, validateGenre } = require('../models/genre');
+const asyncMiddleware = require('../middleware/async');
 
-router.get('/', async (req, res) => {
-    const genres = await Genre
-        .find()
-        .sort('name');
+router.get('/', asyncMiddleware(async (req, res) => {
+    throw new Error('test error logging');
+    const genres = await Genre.find().sort('name');
     res.send(genres);
-});
+}));
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', asyncMiddleware(async (req, res) => {
     const genre = await Genre.findById(req.params.id);
 
     if (!genre) return res.status(404).send('The genre with the given ID was not found.');
 
     res.send(genre);
-});
+}));
 
 router.post('/', autho, async (req, res) => {
     const { error } = validateGenre(req.body);
